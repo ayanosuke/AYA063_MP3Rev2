@@ -21,9 +21,7 @@
 //
 // 2021/10/23 
 // 2021/12/18 Function追加
-// if (myDFPlayer.readType()==DFPlayerPlayFinished) {
-// myDFPlayer.play(1);
-// }
+// 2022/ 1/21 SIO_Control() notifyDccFunc()をArdunoで作るDCCデコーダ入門のコードに変更
 //--------------------------------------------------------------------------------
 
 // シリアルデバックの有効:1 / 無効:0
@@ -90,6 +88,7 @@ uint8_t gCV58_MP3_Vol = 20;
 #if defined(DCC_ACK_PIN)
 const int DccAckPin = DCC_ACK_PIN ;
 #endif
+unsigned char cvtblePrev[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 struct CVPair {
   uint16_t	CV;
@@ -226,34 +225,104 @@ void loop() {
 // SIO_Control()
 //---------------------------------------------------------------------
 void SIO_Control(){
-  enum { ST_INIT = 0,
-         ST_SCAN,
-  };
-  static char state = ST_INIT;
-  char i;
-
-  if(state == ST_INIT ){
-    for(i=0;i<=12;i++){
-      FncState[i] = gState[i]; 
+// F0 受信時の処理
+    if(gState_F0 == 0 && cvtblePrev[0] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[0] = OFF;    
+    } else if(gState_F0 == 1 && cvtblePrev[0] == OFF){
+      myDFPlayer.play(1);
+      cvtblePrev[0] = ON;      
     }
-    state = ST_SCAN;
-    return;
-  }
 
-  if(state == ST_SCAN ){
-    for(i=0;i<=12;i++){
-      if(gState[i] != FncState[i]){
-        FncState[i]=gState[i];
-        if( gCVMP3Table[i] == 1 ){          // 再生
-          myDFPlayer.play(i);
-         break;
-        } else if( gCVMP3Table[i] == 3 ){   // loop再生
-          myDFPlayer.loop(i);
-          break;
-        }
-      }
+// F1 受信時の処理
+    if(gState_F1 == 0 && cvtblePrev[1] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[1] = OFF;    
+    } else if(gState_F1 == 1 && cvtblePrev[1] == OFF){
+      myDFPlayer.play(2);
+      cvtblePrev[1] = ON;      
     }
-  }
+    
+// F2 受信時の処理 gState_F2 に 2が入る
+    if(gState_F2 == 0 && cvtblePrev[2] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[2] = OFF;  
+    } else if(gState_F2 == 1 && cvtblePrev[2]== OFF){
+      myDFPlayer.play(3);
+      cvtblePrev[2] = ON;  
+    }
+
+// F3 受信時の処理
+    if(gState_F3 == 0 && cvtblePrev[3] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[3] = OFF;  
+    } else if(gState_F3 == 1 && cvtblePrev[3]== OFF){
+      myDFPlayer.play(4);
+      cvtblePrev[3] = ON;  
+    }
+    
+// F4 受信時の処理
+    if(gState_F4 == 0 && cvtblePrev[4] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[4] = OFF;  
+    } else if(gState_F4 == 1 && cvtblePrev[4]== OFF){
+      myDFPlayer.play(5);
+      cvtblePrev[4] = ON;  
+    }
+    
+// F5 受信時の処理
+    if(gState_F5 == 0 && cvtblePrev[5] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[5] = OFF;  
+    } else if(gState_F5 == 1 && cvtblePrev[5]== OFF){
+      myDFPlayer.play(6);
+      cvtblePrev[5] = ON;  
+    }
+    
+// F6 受信時の処理
+    if(gState_F6 == 0 && cvtblePrev[6] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[6] = OFF;  
+    } else if(gState_F6 == 1 && cvtblePrev[6]== OFF){
+      myDFPlayer.play(7);
+      cvtblePrev[6] = ON;  
+    }
+
+// F7 受信時の処理
+    if(gState_F7 == 0 && cvtblePrev[7] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[7] = OFF;  
+    } else if(gState_F7 == 1 && cvtblePrev[7]== OFF){
+      myDFPlayer.play(8);
+      cvtblePrev[7] = ON;  
+    }
+
+// F8 受信時の処理
+    if(gState_F8 == 0 && cvtblePrev[8] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[8] = OFF;  
+    } else if(gState_F8 == 1 && cvtblePrev[8]== OFF){
+      myDFPlayer.play(9);
+      cvtblePrev[8] = ON;  
+    }
+
+// F9 受信時の処理
+    if(gState_F9 == 0 && cvtblePrev[9] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[9] = OFF;  
+    } else if(gState_F9 == 1 && cvtblePrev[9]== OFF){
+      myDFPlayer.play(10);
+      cvtblePrev[9] = ON;  
+    }
+
+// F10 受信時の処理
+    if(gState_F10 == 0 && cvtblePrev[10] == ON){
+      myDFPlayer.stop();
+      cvtblePrev[10] = OFF;  
+    } else if(gState_F10 == 1 && cvtblePrev[10]== OFF){
+      myDFPlayer.play(11);
+      cvtblePrev[10] = ON;  
+    }
 }
 
 
@@ -288,158 +357,38 @@ extern void notifyDccSpeed( uint16_t Addr, DCC_ADDR_TYPE AddrType, uint8_t Speed
 //---------------------------------------------------------------------------
 extern void notifyDccFunc(uint16_t Addr, DCC_ADDR_TYPE AddrType, FN_GROUP FuncGrp, uint8_t FuncState)
 {
-  if( FuncGrp == FN_0_4) // F0〜F4の解析
-  {
-    if( gState[0] != (FuncState & FN_BIT_00))
-    {
-      //Get Function 0 (FL) state
-      gState[0] = (FuncState & FN_BIT_00);
-    }
-    if( gState[1] != (FuncState & FN_BIT_01))
-    {
-      //Get Function 1 state
-      gState[1] = (FuncState & FN_BIT_01);
-    }
-    if( gState[2] != (FuncState & FN_BIT_02))
-    {
-      gState[2] = (FuncState & FN_BIT_02);
-    }
-    if( gState[3] != (FuncState & FN_BIT_03))
-    {
-      gState[3] = (FuncState & FN_BIT_03);
-    }
-    if( gState[4] != (FuncState & FN_BIT_04))
-    {
-      gState[4] = (FuncState & FN_BIT_04);
-    }
+  if( FuncGrp == FN_0_4){  // F0〜F4の解析
+    gState_F0 = (FuncState & FN_BIT_00) ? 1 : 0;
+    gState_F1 = (FuncState & FN_BIT_01) ? 1 : 0;
+    gState_F2 = (FuncState & FN_BIT_02) ? 1 : 0;
+    gState_F3 = (FuncState & FN_BIT_03) ? 1 : 0;
+    gState_F4 = (FuncState & FN_BIT_04) ? 1 : 0;
   }
 
-  if( FuncGrp == FN_5_8) { // F5〜F8の解析
-    if( gState[5] != (FuncState & FN_BIT_05)){
-      gState[5] = (FuncState & FN_BIT_05);
-    }
-    if( gState[6] != (FuncState & FN_BIT_06)){
-      gState[6] = (FuncState & FN_BIT_06);
-    }
-    if( gState[7] != (FuncState & FN_BIT_07)){
-      gState[7] = (FuncState & FN_BIT_07);
-    }
-    if( gState[8] != (FuncState & FN_BIT_08)){
-      gState[8] = (FuncState & FN_BIT_08);
-    }
+  if( FuncGrp == FN_5_8){  // F5〜F8の解析
+    gState_F5 = (FuncState & FN_BIT_05) ? 1 : 0;
+    gState_F6 = (FuncState & FN_BIT_06) ? 1 : 0;
+    gState_F7 = (FuncState & FN_BIT_07) ? 1 : 0;
+    gState_F8 = (FuncState & FN_BIT_08) ? 1 : 0;
   }
-
-  if( FuncGrp == FN_9_12){
-    if( gState[9] != (FuncState & FN_BIT_09)){
-      gState[9] = (FuncState & FN_BIT_09);
-    }
-    if( gState[10] != (FuncState & FN_BIT_10)){
-      gState[10] = (FuncState & FN_BIT_10);
-    }
-    if( gState[11] != (FuncState & FN_BIT_11)){
-      gState[11] = (FuncState & FN_BIT_11);
-    }
-    if( gState[12] != (FuncState & FN_BIT_12)){
-      gState[12] = (FuncState & FN_BIT_12);
-    }
-  }
-
-  if( FuncGrp == FN_13_20){
-    if( gState[13] != (FuncState & FN_BIT_13)){
-      gState[13] = (FuncState & FN_BIT_13);
-    }
-    if( gState[14] != (FuncState & FN_BIT_14)){
-      gState[14] = (FuncState & FN_BIT_14);
-    }
-    if( gState[15] != (FuncState & FN_BIT_15)){
-      gState[15] = (FuncState & FN_BIT_15);
-    }
-    if( gState[16] != (FuncState & FN_BIT_16)){
-      gState[16] = (FuncState & FN_BIT_16);
-    }
-    if( gState[17] != (FuncState & FN_BIT_17)){
-      gState[17] = (FuncState & FN_BIT_17);
-    }
-    if( gState[18] != (FuncState & FN_BIT_18)){
-      gState[18] = (FuncState & FN_BIT_18);
-    }  
-    if( gState[19] != (FuncState & FN_BIT_19)){
-      gState[19] = (FuncState & FN_BIT_19);
-    }
-    if( gState[20] != (FuncState & FN_BIT_20)){
-      gState[20] = (FuncState & FN_BIT_20);
-    }  
-  }
-
-
   
-#if 0
-  if( FuncGrp == FN_0_4) // F0〜F4の解析
-  {
-    if( gState_F0 != (FuncState & FN_BIT_00))
-    {
-      //Get Function 0 (FL) state
-      gState_F0 = (FuncState & FN_BIT_00);
-    }
-    if( gState_F1 != (FuncState & FN_BIT_01))
-    {
-      //Get Function 1 state
-      gState_F1 = (FuncState & FN_BIT_01);
-    }
-    if( gState_F2 != (FuncState & FN_BIT_02))
-    {
-      gState_F2 = (FuncState & FN_BIT_02);
-    }
-    if( gState_F3 != (FuncState & FN_BIT_03))
-    {
-      gState_F3 = (FuncState & FN_BIT_03);
-    }
-    if( gState_F4 != (FuncState & FN_BIT_04))
-    {
-      gState_F4 = (FuncState & FN_BIT_04);
-    }
+  if( FuncGrp == FN_9_12) { // F9〜F12の解析
+    gState_F9 = (FuncState & FN_BIT_09) ? 1 : 0;
+    gState_F10 = (FuncState & FN_BIT_10) ? 1 : 0;
+    gState_F11 = (FuncState & FN_BIT_11) ? 1 : 0;
+    gState_F12 = (FuncState & FN_BIT_12) ? 1 : 0;
   }
 
-  if( FuncGrp == FN_5_8)  // F5〜F8の解析
-  {
-    if( gState_F5 != (FuncState & FN_BIT_05))
-    {
-      //Get Function 0 (FL) state
-      gState_F5 = (FuncState & FN_BIT_05);
-    }
-    if( gState_F6 != (FuncState & FN_BIT_06))
-    {
-      //Get Function 1 state
-      gState_F6 = (FuncState & FN_BIT_06);
-    }
-    if( gState_F7 != (FuncState & FN_BIT_07))
-    {
-      gState_F7 = (FuncState & FN_BIT_07);
-    }
-    if( gState_F8 != (FuncState & FN_BIT_08))
-    {
-      gState_F8 = (FuncState & FN_BIT_08);
-    }
+  if( FuncGrp == FN_13_20){   // F13〜F20の解析
+    gState_F13 = (FuncState & FN_BIT_13) ? 1 : 0;
+    gState_F14 = (FuncState & FN_BIT_14) ? 1 : 0;
+    gState_F15 = (FuncState & FN_BIT_15) ? 1 : 0;
+    gState_F16 = (FuncState & FN_BIT_16) ? 1 : 0;
+    gState_F17 = (FuncState & FN_BIT_17) ? 1 : 0;
+    gState_F18 = (FuncState & FN_BIT_18) ? 1 : 0;
+    gState_F19 = (FuncState & FN_BIT_19) ? 1 : 0;
+    gState_F20 = (FuncState & FN_BIT_20) ? 1 : 0;
   }
-
-
-  if( FuncGrp == FN_9_12){
-    if( gState_F9 != (FuncState & FN_BIT_09)){
-      gState_F9 = (FuncState & FN_BIT_09);
-    }
-    if( gState_F10 != (FuncState & FN_BIT_10)){
-      gState_F10 = (FuncState & FN_BIT_10);
-    }
-    if( gState_F11 != (FuncState & FN_BIT_11)){
-      gState_F11 = (FuncState & FN_BIT_11);
-    }
-    if( gState_F12 != (FuncState & FN_BIT_12)){
-      gState_F12 = (FuncState & FN_BIT_12);
-    }
-  }
-
-#endif
-
 }
 
 
