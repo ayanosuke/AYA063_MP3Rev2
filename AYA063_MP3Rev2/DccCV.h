@@ -100,6 +100,10 @@ uint8_t gState_F13 = 0;
 uint8_t gState_F14 = 0; 
 uint8_t gState_F15 = 0;
 uint8_t gState_F16 = 0;
+uint8_t gState_F17 = 0;
+uint8_t gState_F18 = 0; 
+uint8_t gState_F19 = 0;
+uint8_t gState_F20 = 0;
 uint8_t gState_Function = 0;
 
 //ファンクションの変数
